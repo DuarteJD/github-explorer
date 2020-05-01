@@ -5,17 +5,9 @@ import Dashboard from '../pages/Dashboard';
 import Repository from '../pages/Repository';
 import User from '../pages/User';
 
-interface Props {
-  toggleTheme(): void;
-}
-
-const Routes: React.FC<Props> = prevProps => (
+const Routes: React.FC = () => (
   <Switch>
-    <Route
-      path="/"
-      exact
-      render={() => <Dashboard toggleTheme={prevProps.toggleTheme} />}
-    />
+    <Route path="/" exact component={Dashboard} />
     <Route path="/repository/:repository+" component={Repository} />
     <Route path="/user/:user+" component={User} />
   </Switch>

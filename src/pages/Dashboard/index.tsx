@@ -5,6 +5,7 @@ import Switch from 'react-switch';
 import { FiChevronRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { shade } from 'polished';
+import { Theme } from '../../hooks/useTheme';
 import Api from '../../services/api';
 import usePersistedState from '../../hooks/usePersistedState';
 
@@ -19,10 +20,6 @@ import {
   Header,
   HeaderSwitcher,
 } from './styles';
-
-interface Props {
-  toggleTheme(): void;
-}
 
 interface Repository {
   full_name: string;
@@ -45,7 +42,8 @@ interface GitUser {
   type: string;
 }
 
-const Dashboard: React.FC<Props> = prevProps => {
+const Dashboard: React.FC = () => {
+  const { toggleTheme } = useContext(Theme);
   const { colors, title } = useContext(ThemeContext);
   const [inputRepositorio, setInputRepositorio] = useState('');
   const [repositories, setRepositories] = usePersistedState<Repository[]>(
@@ -96,7 +94,7 @@ const Dashboard: React.FC<Props> = prevProps => {
         />
         <HeaderSwitcher>
           <Switch
-            onChange={prevProps.toggleTheme}
+            onChange={toggleTheme}
             checked={title === 'dark'}
             checkedIcon={false}
             uncheckedIcon={false}
