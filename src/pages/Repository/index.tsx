@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { ThemeContext } from 'styled-components';
 import { useRouteMatch, Link } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 import Api from '../../services/api';
 
-import logoImg from '../../assets/logo.svg';
+import logoLight from '../../assets/logo.svg';
+import logoDark from '../../assets/logo-dark.svg';
 
 import { Header, RepositoryInfo, Issues } from './styles';
 
@@ -34,6 +36,7 @@ interface Issue {
 }
 
 const Repository: React.FC = () => {
+  const { title } = useContext(ThemeContext);
   const [repository, setRepository] = useState<Repository | null>(null);
   const [issues, setIssues] = useState<Issue[]>([]);
 
@@ -52,7 +55,10 @@ const Repository: React.FC = () => {
   return (
     <>
       <Header>
-        <img src={logoImg} alt="Github Explorer" />
+        <img
+          src={title === 'dark' ? logoDark : logoLight}
+          alt="Github Explorer"
+        />
         <Link to="/">
           <FiChevronLeft size={16} />
           Voltar

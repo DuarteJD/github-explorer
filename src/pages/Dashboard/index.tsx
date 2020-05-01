@@ -1,11 +1,27 @@
-import React, { useState, FormEvent, useEffect } from 'react';
+import React, { useState, FormEvent, useEffect, useContext } from 'react';
+import { ThemeContext } from 'styled-components';
+import Switch from 'react-switch';
+
 import { FiChevronRight } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
+import { shade } from 'polished';
 import Api from '../../services/api';
 
-import logoImg from '../../assets/logo.svg';
+import logoLight from '../../assets/logo.svg';
+import logoDark from '../../assets/logo-dark.svg';
 
-import { Title, Form, Repositories, Error } from './styles';
+import {
+  Title,
+  Form,
+  Repositories,
+  Error,
+  Header,
+  HeaderSwitcher,
+} from './styles';
+
+interface Props {
+  toggleTheme(): void;
+}
 
 interface Repository {
   full_name: string;
@@ -16,7 +32,8 @@ interface Repository {
   };
 }
 
-const Dashboard: React.FC = () => {
+const Dashboard: React.FC<Props> = prevProps => {
+  const { colors, title } = useContext(ThemeContext);
   const [inputRepositorio, setInputRepositorio] = useState('');
   const [repositories, setRepositories] = useState<Repository[]>(() => {
     const storageRepositories = localStorage.getItem(
@@ -59,7 +76,27 @@ const Dashboard: React.FC = () => {
 
   return (
     <>
-      <img src={logoImg} alt="Github explorer" />
+      <Header>
+        <img
+          src={title === 'dark' ? logoDark : logoLight}
+          alt="Github explorer"
+        />
+        <HeaderSwitcher>
+          <Switch
+            onChange={prevProps.toggleTheme}
+            checked={title === 'dark'}
+            checkedIcon={false}
+            uncheckedIcon={false}
+            height={10}
+            width={40}
+            handleDiameter={20}
+            offColor={shade(0.15, colors.offcolor)}
+            onColor={colors.oncolor}
+          />
+          <strong>{title}</strong>
+        </HeaderSwitcher>
+      </Header>
+
       <Title>Explore repositórios no Github</Title>
 
       <Form hasError={!!inputError} onSubmit={handleAddRepository}>

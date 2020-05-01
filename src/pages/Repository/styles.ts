@@ -40,12 +40,12 @@ export const RepositoryInfo = styled.section`
 
       strong {
         font-size: 36px;
-        color: #3d3d4d;
+        color: ${props => props.theme.colors.text};
       }
 
       p {
         font-size: 18px;
-        color: #737380;
+        color: ${props => props.theme.colors.text};
         margin-top: 4px;
       }
     }
@@ -63,12 +63,12 @@ export const RepositoryInfo = styled.section`
       strong {
         display: block;
         font-size: 36px;
-        color: #3d3d4d;
+        color: ${props => props.theme.colors.text};
       }
 
       span {
         display: block;
-        color: #6c6c8d;
+        color: ${props => props.theme.colors.text};
         margin-left: 4px;
       }
     }
