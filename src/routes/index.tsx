@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import Dashboard from '../pages/Dashboard';
 import Repository from '../pages/Repository';
+import User from '../pages/User';
 
 interface Props {
   toggleTheme(): void;
@@ -16,6 +17,7 @@ const Routes: React.FC<Props> = prevProps => (
       render={() => <Dashboard toggleTheme={prevProps.toggleTheme} />}
     />
     <Route path="/repository/:repository+" component={Repository} />
+    <Route path="/user/:user+" component={User} />
   </Switch>
 );
 

@@ -1,4 +1,4 @@
-import React, { useState, FormEvent, useEffect, useContext } from 'react';
+import React, { useState, FormEvent, useContext } from 'react';
 import { ThemeContext } from 'styled-components';
 import Switch from 'react-switch';
 
@@ -36,6 +36,7 @@ interface Repository {
 
 interface GitUser {
   id: string;
+  login: string;
   name: string;
   avatar_url: string;
   location: string;
@@ -47,29 +48,16 @@ interface GitUser {
 const Dashboard: React.FC<Props> = prevProps => {
   const { colors, title } = useContext(ThemeContext);
   const [inputRepositorio, setInputRepositorio] = useState('');
-  const [repositories, setRepositories] = useState<Repository[]>(() => {
-    const storageRepositories = localStorage.getItem(
-      '@GithubExplorer:Repositories',
-    );
-    if (storageRepositories) {
-      return JSON.parse(storageRepositories);
-    }
-
-    return [];
-  });
+  const [repositories, setRepositories] = usePersistedState<Repository[]>(
+    '@GithubExplorer:Repositories',
+    [],
+  );
   const [users, setUsers] = usePersistedState<GitUser[]>(
     '@GithubExplorer:Users',
     [],
   );
 
   const [inputError, setInputError] = useState('');
-
-  useEffect(() => {
-    localStorage.setItem(
-      '@GithubExplorer:Repositories',
-      JSON.stringify(repositories),
-    );
-  }, [repositories]);
 
   async function handleAddRepository(
     event: FormEvent<HTMLFormElement>,
@@ -154,7 +142,7 @@ const Dashboard: React.FC<Props> = prevProps => {
           </Link>
         ))}
         {users.map(user => (
-          <Link key={user.id} to={`/repository/${user.name}`}>
+          <Link key={user.id} to={`/user/${user.login}`}>
             <img src={user.avatar_url} alt={user.name} />
             <div>
               <strong>{user.name}</strong>
