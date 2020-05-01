@@ -8,6 +8,8 @@ declare module 'styled-components' {
       oncolor: string;
       offcolor: string;
 
+      inputError: string;
+
       background: string;
       text: string;
     };

@@ -45,14 +45,15 @@ export const Form = styled.form<FormProps>`
     padding: 0 24px;
     border: 0;
     border-radius: 5px 0 0 5px;
-    color: #3a3a3a;
-    border: 2px solid #fff;
+    color: ${props => props.theme.colors.offcolor};
+    background-color: ${props => props.theme.colors.oncolor};
+    border: 2px solid ${props => props.theme.colors.oncolor};
     border-right: 0;
 
     ${props =>
       props.hasError &&
       css`
-        border-color: #c53030;
+        border-color: ${props.theme.colors.inputError};
       `}
 
     &::placeholder {
@@ -81,7 +82,7 @@ export const Repositories = styled.div`
   max-width: 700px;
 
   a {
-    background: #fff;
+    background: ${props => props.theme.colors.oncolor};
     border-radius: 5px;
     width: 100%;
     padding: 24px;
@@ -111,7 +112,7 @@ export const Repositories = styled.div`
 
       strong {
         font-size: 20px;
-        color: #3d3d4d;
+        color: ${props => props.theme.colors.offcolor};
       }
 
       p {
@@ -123,14 +124,14 @@ export const Repositories = styled.div`
 
     svg {
       margin-left: auto;
-      color: #cbcbd6;
+      color: ${props => props.theme.colors.offcolor};
     }
   }
 `;
 
 export const Error = styled.span`
   display: block;
-  color: #c53030;
+  color: ${props => props.theme.colors.inputError};
   margin-top: 6px;
   margin-left: 6px;
 `;

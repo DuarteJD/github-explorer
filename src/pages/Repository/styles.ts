@@ -79,7 +79,7 @@ export const Issues = styled.div`
   margin-top: 80px;
 
   a {
-    background: #fff;
+    background: ${props => props.theme.colors.oncolor};
     border-radius: 5px;
     width: 100%;
     padding: 24px;
@@ -104,7 +104,7 @@ export const Issues = styled.div`
 
       strong {
         font-size: 20px;
-        color: #3d3d4d;
+        color: ${props => props.theme.colors.offcolor};
       }
 
       p {
@@ -116,7 +116,7 @@ export const Issues = styled.div`
 
     svg {
       margin-left: auto;
-      color: #cbcbd6;
+      color: ${props => props.theme.colors.offcolor};
     }
   }
 `;
