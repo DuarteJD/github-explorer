@@ -190,6 +190,15 @@ const Dashboard: React.FC = () => {
         description:
           'Você atingiu 100% do limite máximo estabelecido para uso da Api!',
       });
+      return;
+    }
+
+    if (Number(remaining) <= 10) {
+      addToast({
+        title: 'Uso da api',
+        type: 'info',
+        description: `Atençao para o limite de requisições! Faltam ${remaining}!`,
+      });
     }
   }
 
