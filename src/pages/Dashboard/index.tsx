@@ -183,7 +183,7 @@ const Dashboard: React.FC = () => {
       return;
     }
 
-    if (Number(limit) === Number(remaining)) {
+    if (Number(remaining) === 0) {
       addToast({
         title: 'Uso da api',
         type: 'error',
