@@ -9,6 +9,7 @@ declare module 'styled-components' {
       offcolor: string;
 
       inputError: string;
+      borderNews: string;
 
       background: string;
       text: string;

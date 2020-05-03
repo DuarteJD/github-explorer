@@ -1,8 +1,8 @@
-import React, { useState, FormEvent, useContext } from 'react';
+import React, { useState, FormEvent, useContext, useEffect } from 'react';
 import { ThemeContext } from 'styled-components';
 import Switch from 'react-switch';
 
-import { FiChevronRight } from 'react-icons/fi';
+import { FiChevronRight, FiStar } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { shade } from 'polished';
 import { useToast } from '../../hooks/toast';
@@ -20,6 +20,7 @@ import {
   Error,
   Header,
   HeaderSwitcher,
+  RepositoriesChild,
 } from './styles';
 
 interface Message {
@@ -35,6 +36,9 @@ interface Repository {
     login: string;
     avatar_url: string;
   };
+  updated_at: Date;
+  isNew: boolean;
+  isFavorite: boolean;
 }
 
 interface GitUser {
@@ -46,6 +50,9 @@ interface GitUser {
   bio: string;
   public_repos: number;
   type: string;
+  updated_at: Date;
+  isFavorite: boolean;
+  isNew: boolean;
 }
 
 const Dashboard: React.FC = () => {
@@ -53,14 +60,103 @@ const Dashboard: React.FC = () => {
   const { toggleTheme } = useContext(Theme);
   const { colors, title } = useContext(ThemeContext);
   const [inputRepositorio, setInputRepositorio] = useState('');
-  const [repositories, setRepositories] = usePersistedState<Repository[]>(
+  const [repositoriesOld, setRepositoriesOld] = usePersistedState<Repository[]>(
     '@GithubExplorer:Repositories',
     [],
   );
-  const [users, setUsers] = usePersistedState<GitUser[]>(
+  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [usersOld, setUsersOld] = usePersistedState<GitUser[]>(
     '@GithubExplorer:Users',
     [],
   );
+  const [users, setUsers] = useState<GitUser[]>([]);
+
+  useEffect(() => {
+    async function verifyRepoNews(): Promise<void> {
+      try {
+        // Coloquei todos os repositórios que estou seguindo dentro de uma promise;
+        const promisesRepo = repositoriesOld.map(async repository =>
+          Api.get<Repository>(`repos/${repository.full_name}`),
+        );
+
+        // Executando todas as promises de uma vez só
+        const result = await Promise.all(promisesRepo);
+
+        // Criei um novo array para não adicionar uma nova dependência dentro do UseEffect
+        const newRepositories: Repository[] = [];
+
+        /**
+         * Percorrendo o resultado de todas as promises com os dados atualizados do Repositórios
+         * Aqui irei comparar as datas de atualização e popular o array
+         * */
+        result.map((r, i) =>
+          newRepositories.push({
+            ...r.data,
+            isFavorite: true,
+            isNew: repositoriesOld[i].updated_at !== r.data.updated_at,
+          }),
+        );
+        // Agora irei atualizar o localStorage com as informações atualizadas do(s) repositório(s)
+        localStorage.setItem(
+          '@GithubExplorer:Repositories',
+          JSON.stringify(newRepositories),
+        );
+
+        // Setando a variável que abaixo será responsável por listar os repositórios favoritos
+        setRepositories(newRepositories);
+      } catch (error) {
+        addToast({
+          title: 'Erro na requisição',
+          type: 'error',
+          description: 'Erro ao buscar informações do diretório!',
+        });
+      }
+    }
+
+    verifyRepoNews();
+  }, [repositoriesOld, addToast]);
+
+  useEffect(() => {
+    async function verifyUserNews(): Promise<void> {
+      try {
+        // Coloquei todos os users que estou seguindo dentro de uma promise;
+        const promisesUsers = usersOld.map(async user =>
+          Api.get<GitUser>(`users/${user.login}`),
+        );
+
+        // Executando todas as promises de uma vez só
+        const result = await Promise.all(promisesUsers);
+
+        // Criei um novo array para não adicionar uma nova dependência dentro do UseEffect
+        const newUsers: GitUser[] = [];
+
+        /**
+         * Percorrendo o resultado de todas as promises com os dados atualizados do Usuário
+         * Aqui irei comparar as datas de atualização e popular o array
+         * */
+        result.map((r, i) =>
+          newUsers.push({
+            ...r.data,
+            isFavorite: true,
+            isNew: usersOld[i].public_repos !== r.data.public_repos,
+          }),
+        );
+        // Agora irei atualizar o localStorage com as informações atualizadas do(s) usuario(s)
+        localStorage.setItem('@GithubExplorer:Users', JSON.stringify(newUsers));
+
+        // Setando a variável que abaixo será responsável por listar os usuários favoritos
+        setUsers(newUsers);
+      } catch (error) {
+        addToast({
+          title: 'Erro na requisição',
+          type: 'error',
+          description: 'Erro ao buscar informações do usuário!',
+        });
+      }
+    }
+
+    verifyUserNews();
+  }, [addToast]);
 
   const [inputError, setInputError] = useState('');
 
@@ -122,7 +218,10 @@ const Dashboard: React.FC = () => {
           limit: response.headers['x-ratelimit-limit'],
           remaining: response.headers['x-ratelimit-remaining'],
         });
-        setRepositories([...repositories, response.data]);
+        setRepositories([
+          ...repositories,
+          { ...response.data, isFavorite: false, isNew: false },
+        ]);
         setInputRepositorio('');
         setInputError('');
       } else {
@@ -132,7 +231,10 @@ const Dashboard: React.FC = () => {
           limit: response.headers['x-ratelimit-limit'],
           remaining: response.headers['x-ratelimit-remaining'],
         });
-        setUsers([...users, response.data]);
+        setUsers([
+          ...users,
+          { ...response.data, isNew: false, isFavorite: false },
+        ]);
         setInputRepositorio('');
         setInputError('');
       }
@@ -183,33 +285,121 @@ const Dashboard: React.FC = () => {
       {inputError && <Error>{inputError}</Error>}
 
       <Repositories>
-        {repositories.map(repository => (
-          <Link
+        {repositories.map((repository, index) => (
+          <RepositoriesChild
             key={repository.full_name}
-            to={`/repository/${repository.full_name}`}
+            hasNews={repository.isNew}
+            hasLiked={repository.isFavorite}
           >
-            <img
-              src={repository.owner.avatar_url}
-              alt={repository.owner.login}
-            />
-            <div>
-              <strong>{repository.full_name}</strong>
-              <p>{repository.description}</p>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (repository.isFavorite) {
+                  // Remover
+                  const dislike = repository.full_name;
+                  const repositoryIndex = repositoriesOld.findIndex(
+                    r => r.full_name === dislike,
+                  );
 
-            <FiChevronRight size={20} />
-          </Link>
+                  if (repositoryIndex >= 0) {
+                    const newLikedRepository = repositoriesOld.filter(
+                      r => r.full_name !== dislike,
+                    );
+                    setRepositoriesOld(newLikedRepository);
+
+                    const newRepositories = repositories.filter(
+                      r => r.full_name !== dislike,
+                    );
+                    setRepositories(newRepositories);
+                  } else {
+                    addToast({
+                      title: 'Registro não encontrado!',
+                      type: 'error',
+                      description: `Não encontrei o registro ${repository.full_name}!`,
+                    });
+                  }
+                } else {
+                  setRepositoriesOld([...repositoriesOld, repository]);
+                  repositories[index].isFavorite = true;
+                }
+              }}
+            >
+              <FiStar size={26} />
+            </button>
+            <Link to={`/repository/${repository.full_name}`}>
+              <img
+                src={repository.owner.avatar_url}
+                alt={repository.owner.login}
+              />
+              <div>
+                <strong>{repository.full_name}</strong>
+                <span>
+                  {` [ ${new Date(
+                    repository.updated_at,
+                  ).toLocaleDateString()} - ${new Date(
+                    repository.updated_at,
+                  ).toLocaleTimeString()}]`}
+                </span>
+                <p>{repository.description}</p>
+              </div>
+
+              <FiChevronRight size={20} />
+            </Link>
+          </RepositoriesChild>
         ))}
-        {users.map(user => (
-          <Link key={user.id} to={`/user/${user.login}`}>
-            <img src={user.avatar_url} alt={user.name} />
-            <div>
-              <strong>{user.name}</strong>
-              <p>{user.bio}</p>
-            </div>
+        {users.map((user, index) => (
+          <RepositoriesChild
+            key={user.id}
+            hasNews={user.isNew}
+            hasLiked={user.isFavorite}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                if (users[index].isFavorite) {
+                  // Remover
+                  const dislike = users[index].login;
+                  const userIndex = usersOld.findIndex(
+                    u => u.login === dislike,
+                  );
 
-            <FiChevronRight size={20} />
-          </Link>
+                  if (userIndex >= 0) {
+                    const newLikedUsers = usersOld.filter(
+                      u => u.login !== dislike,
+                    );
+                    setUsersOld(newLikedUsers);
+
+                    const newUsers = users.filter(u => u.login !== dislike);
+                    setUsers(newUsers);
+                  } else {
+                    addToast({
+                      title: 'Registro não encontrado!',
+                      type: 'error',
+                      description: `Não encontrei o registro ${user.login}!`,
+                    });
+                  }
+                } else {
+                  setUsersOld([...usersOld, users[index]]);
+                  users[index].isFavorite = true;
+                }
+              }}
+            >
+              <FiStar size={26} />
+            </button>
+            <Link to={`/user/${user.login}`}>
+              <img src={user.avatar_url} alt={user.name} />
+              <div>
+                <strong>{user.name}</strong>
+                <span>
+                  {` [ ${user.public_repos}`}
+                  {' repositórios ]'}
+                </span>
+                <p>{user.bio}</p>
+              </div>
+
+              <FiChevronRight size={20} />
+            </Link>
+          </RepositoriesChild>
         ))}
       </Repositories>
     </>
