@@ -212,6 +212,20 @@ const Dashboard: React.FC = () => {
     try {
       const split = inputRepositorio.split('/');
       if (split.length > 1) {
+        const indexRepo = repositories.findIndex(
+          r => r.full_name === inputRepositorio,
+        );
+
+        if (indexRepo >= 0) {
+          addToast({
+            title: 'Informação',
+            type: 'info',
+            description:
+              'Você já possui este repositório na lista atual! \n ;)',
+          });
+          return;
+        }
+
         const response = await Api.get<Repository>(`repos/${inputRepositorio}`);
 
         messageAlert({
@@ -225,6 +239,16 @@ const Dashboard: React.FC = () => {
         setInputRepositorio('');
         setInputError('');
       } else {
+        const indexUser = users.findIndex(r => r.login === inputRepositorio);
+
+        if (indexUser >= 0) {
+          addToast({
+            title: 'Informação',
+            type: 'info',
+            description: 'Você já possui este usuário na lista atual! \n ;)',
+          });
+          return;
+        }
         const response = await Api.get<GitUser>(`users/${inputRepositorio}`);
 
         messageAlert({

@@ -1,4 +1,9 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+interface LinkProps {
+  hasNews?: boolean;
+  hasLiked?: boolean;
+}
 
 export const Header = styled.header`
   display: flex;
@@ -74,29 +79,60 @@ export const RepositoryInfo = styled.section`
     }
   }
 `;
+
 export const Repositories = styled.div`
   margin-top: 80px;
   max-width: 700px;
+`;
+
+export const RepositoriesChild = styled.div<LinkProps>`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: ${props => props.theme.colors.oncolor};
+  border-radius: 5px;
+  width: 100%;
+  padding: 20px;
+  margin-top: 6px;
+
+  button {
+    background: transparent;
+    border: none;
+    margin-right: 20px;
+
+    svg {
+      margin-left: auto;
+      color: ${props =>
+        props.hasLiked ? props.theme.colors.borderNews : '#a8a8b3'};
+
+      transition: background-color 0.2s;
+
+      &:hover {
+        color: ${props =>
+          props.hasLiked ? '#a8a8b3' : props.theme.colors.borderNews};
+      }
+    }
+  }
+
+  ${props =>
+    props.hasNews &&
+    css`
+      border: 4px solid ${props.theme.colors.borderNews};
+    `};
 
   a {
-    background: ${props => props.theme.colors.oncolor};
-    border-radius: 5px;
-    width: 100%;
-    padding: 24px;
-    display: block;
-    text-decoration: none;
-
     display: flex;
     align-items: center;
+
+    text-decoration: none;
+    width: 100%;
+
     transition: transform 0.2s;
-
-    & + a {
-      margin-top: 6px;
-    }
-
     &:hover {
       transform: translateX(10px);
     }
+
     img {
       width: 64px;
       height: 64px;
@@ -112,6 +148,11 @@ export const Repositories = styled.div`
         color: ${props => props.theme.colors.offcolor};
       }
 
+      span {
+        font-size: 12px;
+        color: #a8a8b3;
+      }
+
       p {
         font-size: 18px;
         color: #a8a8b3;
@@ -122,6 +163,11 @@ export const Repositories = styled.div`
     svg {
       margin-left: auto;
       color: ${props => props.theme.colors.offcolor};
+      transition: background-color 0.2s;
+
+      &:hover {
+        color: ${props => props.theme.colors.borderNews};
+      }
     }
   }
 `;
