@@ -1,6 +1,6 @@
-<span align="center">
+<div align="center">
   <img src="src/assets/logo.svg" />
-</span>
+</div>
 <br/><br/>
 Projeto React.JS utilizando a Api pública do Github para listagem de Usuário, Repositórios e Issues onde é possível seguir um usuário ou repositório desejado e ficar sabendo se houve alguma alteração desde sua última visita.
 
@@ -16,7 +16,7 @@ Projeto React.JS utilizando a Api pública do Github para listagem de Usuário, 
 
 ## Fique sabendo se algo mudou desde sua última visita!
 Não quer perder nada de novo de um repositório, ou quer ficar sabendo se um usuário criou novos repositórios desde sua última visita?
-<br/>
+<br/> <br/>
 ![github-explorer-updates](/src/assets/promo/updates_20.gif)
 
 ## Projeto em execução
@@ -28,5 +28,6 @@ Abaixo é possível visualizar:
 * Seguir um repositório interessante através da listagem
 * Mensagens estilo toast personalizada
 * Mudança de tema entre o claro e escuro
-<br/>
-![github-explorer](/src/assets/promo/github-explorer-20.gif)
+<br/><br/>
+
+![github-explorer-running](/src/assets/promo/github-explorer-20.gif)
