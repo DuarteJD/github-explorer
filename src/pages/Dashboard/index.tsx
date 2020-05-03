@@ -335,6 +335,12 @@ const Dashboard: React.FC = () => {
                       r => r.full_name !== dislike,
                     );
                     setRepositories(newRepositories);
+
+                    addToast({
+                      title: 'Unfollow',
+                      type: 'info',
+                      description: `Você deixou de seguir o repositório ${repository.full_name}!`,
+                    });
                   } else {
                     addToast({
                       title: 'Registro não encontrado!',
@@ -345,6 +351,11 @@ const Dashboard: React.FC = () => {
                 } else {
                   setRepositoriesOld([...repositoriesOld, repository]);
                   repositories[index].isFavorite = true;
+                  addToast({
+                    title: 'Incrível!',
+                    type: 'success',
+                    description: `Agora você está seguindo o repositório ${repository.full_name}!`,
+                  });
                 }
               }}
             >
@@ -395,6 +406,12 @@ const Dashboard: React.FC = () => {
 
                     const newUsers = users.filter(u => u.login !== dislike);
                     setUsers(newUsers);
+
+                    addToast({
+                      title: 'Unfollow',
+                      type: 'info',
+                      description: `Você deixou de seguir o usuário ${user.login}!`,
+                    });
                   } else {
                     addToast({
                       title: 'Registro não encontrado!',
@@ -405,6 +422,11 @@ const Dashboard: React.FC = () => {
                 } else {
                   setUsersOld([...usersOld, users[index]]);
                   users[index].isFavorite = true;
+                  addToast({
+                    title: 'Incrível!',
+                    type: 'success',
+                    description: `Agora você está seguindo o usuário ${user.login}!`,
+                  });
                 }
               }}
             >

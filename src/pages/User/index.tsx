@@ -157,6 +157,12 @@ const User: React.FC = () => {
 
                       // Agora só preciso atualizar a informação no array temporário que irá alterar o like do repo
                       repositories[index].isFavorite = false;
+
+                      addToast({
+                        title: 'Unfollow',
+                        type: 'info',
+                        description: `Você deixou de seguir o repositório ${repository.full_name}!`,
+                      });
                     } else {
                       addToast({
                         title: 'Registro não encontrado!',
@@ -167,6 +173,11 @@ const User: React.FC = () => {
                   } else {
                     setRepositoriesOld([...repositoriesOld, repository]);
                     repositories[index].isFavorite = true;
+                    addToast({
+                      title: 'Incrível!',
+                      type: 'success',
+                      description: `Agora você está seguindo o repositório ${repository.full_name}!`,
+                    });
                   }
                 }}
               >
